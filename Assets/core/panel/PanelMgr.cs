@@ -3,18 +3,24 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
+/// <summary>
+/// 面板管理
+/// </summary>
 public class PanelMgr : MonoBehaviour
 {
-    //单例
+    // 单例
     public static PanelMgr instance;
-    //画板
+
+    // 画板
     private GameObject canvas;
-    //面板
+
+    // 面板
     public Dictionary<string, PanelBase> dict;
-    //层级
+
+    // 层级
     private Dictionary<PanelLayer, Transform> layerDict;
 
-    //开始
+    // 开始
     public void Awake()
     {
         instance = this;
@@ -22,14 +28,14 @@ public class PanelMgr : MonoBehaviour
         dict = new Dictionary<string, PanelBase>();
     }
 
-    //初始化层
+    // 初始化层
     private void InitLayer()
     {
-        //画布
+        // 画布
         canvas = GameObject.Find("Canvas");
         if (canvas == null)
             Debug.LogError("panelMgr.InitLayer fail, canvas is null");
-        //各个层级
+        // 各个层级
         layerDict = new Dictionary<PanelLayer, Transform>();
 
         foreach (PanelLayer pl in Enum.GetValues(typeof(PanelLayer)))
@@ -40,38 +46,38 @@ public class PanelMgr : MonoBehaviour
         }
     }
 
-    //打开面板
+    // 打开面板
     public void OpenPanel<T>(string skinPath, params object[] args) where T : PanelBase
     {
-        //已经打开
+        // 已经打开
         string name = typeof(T).ToString();
         if (dict.ContainsKey(name))
             return;
-        //面板脚本
+        // 面板脚本
         PanelBase panel = canvas.AddComponent<T>();
         panel.Init(args);
         dict.Add(name, panel);
-        //加载皮肤
+        // 加载皮肤
         skinPath = (skinPath != "" ? skinPath : panel.skinPath);
         GameObject skin = Resources.Load<GameObject>(skinPath);
         if (skin == null)
             Debug.LogError("panelMgr.OpenPanel fail, skin is null,skinPath = " + skinPath);
-        panel.skin = (GameObject)Instantiate(skin);
-        //坐标
+        panel.skin = (GameObject) Instantiate(skin);
+        // 坐标
         Transform skinTrans = panel.skin.transform;
         PanelLayer layer = panel.layer;
         Transform parent = layerDict[layer];
         skinTrans.SetParent(parent, false);
-        //panel的生命周期
+        // panel的生命周期
         panel.OnShowing();
-        //anm
+        // anm
         panel.OnShowed();
     }
 
-    //关闭面板
+    // 关闭面板
     public void ClosePanel(string name)
     {
-        PanelBase panel = (PanelBase)dict[name];
+        PanelBase panel = (PanelBase) dict[name];
         if (panel == null)
             return;
 
@@ -84,11 +90,12 @@ public class PanelMgr : MonoBehaviour
 }
 
 
-///分层类型
+// 分层类型
 public enum PanelLayer
 {
     //面板
     Panel,
+
     //提示
     Tips,
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Server IP&Port Configuration
+/// Server IP & Port Configuration
 /// </summary>
 public static class IPConfig
 {
